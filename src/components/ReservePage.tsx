@@ -43,8 +43,8 @@ export default function ReservePage() {
           Species Register <span>{reserve.sectionNote}</span>
         </div>
         <main className="grid">
-          {reserve.species.map((s) => (
-            <SpeciesCard key={s.name} species={s} />
+          {reserve.species.map((s, i) => (
+            <SpeciesCard key={s.name} species={s} index={i} />
           ))}
         </main>
         <footer>

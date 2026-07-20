@@ -1,11 +1,19 @@
+import type { CSSProperties } from 'react'
 import type { Species } from '../data/types'
+import useReveal from '../hooks/useReveal'
 import LevelLadder from './LevelLadder'
 import MedalRow from './MedalRow'
 import ActivityClock from './ActivityClock'
 
-export default function SpeciesCard({ species: s }: { species: Species }) {
+/** `index` staggers the scroll-reveal so a row of cards rises in sequence. */
+export default function SpeciesCard({ species: s, index = 0 }: { species: Species; index?: number }) {
+  const ref = useReveal<HTMLElement>()
   return (
-    <article className={'card' + (s.greatOne ? ' great' : '')}>
+    <article
+      ref={ref}
+      className={'card reveal' + (s.greatOne ? ' great' : '')}
+      style={{ '--i': index } as CSSProperties}
+    >
       <div className="bar">
         <div className="sp">
           {s.name}

@@ -212,6 +212,44 @@ footer {
   font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--faint); letter-spacing: .04em; line-height: 1.7;
 }
 
+/* ── motion ──
+   The card is a riveted placard: hovering lifts it off the board, scrolling
+   settles it into place. Kept restrained on purpose — this is a field register,
+   not a dashboard. */
+html { scroll-behavior: smooth }
+
+.card {
+  transition: transform .2s ease, box-shadow .2s ease;
+  box-shadow: 0 2px 6px -4px rgba(35, 31, 24, .5);
+}
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 34px -20px rgba(35, 31, 24, .6);
+}
+/* The rivets catch a little more light as the placard lifts. */
+.card:hover::before, .card:hover::after { box-shadow: 0 2px 3px rgba(0, 0, 0, .45) }
+
+/* Scroll reveal. `.revealed` is added by useReveal, which fails open — see the
+   hook. `backwards` fill holds the from-state through the stagger delay (without
+   it a delayed card flashes at full opacity first); omitting `forwards` lets the
+   finished animation release its transform so :hover takes over cleanly. */
+.card.reveal { opacity: 0 }
+.card.reveal.revealed {
+  opacity: 1;
+  animation: card-rise .55s cubic-bezier(.22, .68, .32, 1) backwards;
+  animation-delay: calc(min(var(--i, 0), 5) * 45ms);
+}
+@keyframes card-rise {
+  from { opacity: 0; transform: translateY(18px) }
+  to { opacity: 1; transform: translateY(0) }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto }
+  .card, .card:hover { transition: none; transform: none }
+  .card.reveal, .card.reveal.revealed { opacity: 1; animation: none }
+}
+
 @media (max-width: 560px) {
   .grid { grid-template-columns: 1fr }
   .permit { display: none }
