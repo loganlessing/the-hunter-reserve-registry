@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reserve Field Register — Yukon Valley</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Zilla+Slab:ital,wght@0,500;0,600;0,700;1,500&family=Public+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#f1ead9; --paper2:#e9e0cb; --card:#f6f1e3;
+    --pine:#1d3a2d; --pine2:#2b5240; --ink:#231f18; --soft:#5d5748; --faint:#8a7f66;
+    --line:#c9bda1; --blaze:#d95f18;
+    --feed:#4a7c3f; --drink:#2e6f8e; --rest:#cdbf9f;
+    --bronze:#9c6b3e; --silver:#8a8f93; --gold:#a8781f; --diamond:#2e6f8e;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    background:var(--paper);color:var(--ink);
+    font-family:'Public Sans',system-ui,sans-serif;line-height:1.45;
+    padding:clamp(10px,2.5vw,32px);
+    background-image:
+      repeating-radial-gradient(ellipse 900px 500px at 12% 6%, transparent 0 60px, rgba(29,58,45,.04) 60px 61px),
+      repeating-radial-gradient(ellipse 1100px 640px at 90% 94%, transparent 0 78px, rgba(29,58,45,.035) 78px 79px);
+  }
+  .board{
+    max-width:1180px;margin:0 auto;background:var(--paper);
+    border:3px solid var(--pine);outline:1px solid var(--pine);outline-offset:5px;
+    padding:clamp(16px,3vw,36px);box-shadow:0 18px 50px -22px rgba(35,31,24,.45);
+  }
+
+  /* ── masthead ── */
+  .mast{display:flex;gap:clamp(12px,3vw,26px);align-items:center;flex-wrap:wrap;
+    padding-bottom:18px;border-bottom:3px double var(--pine)}
+  .crest{flex:none;width:88px;height:88px;border-radius:50%;border:3px solid var(--pine);
+    display:flex;align-items:center;justify-content:center;
+    background:radial-gradient(circle at 50% 38%, var(--paper2), var(--paper))}
+  .crest svg{width:58px;height:58px}
+  .mtxt{flex:1;min-width:230px}
+  .dept{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.26em;
+    text-transform:uppercase;color:var(--pine);font-weight:600}
+  h1{font-family:'Alfa Slab One',serif;font-weight:400;font-size:clamp(30px,6.8vw,56px);
+    line-height:1.05;color:var(--pine);text-transform:uppercase;letter-spacing:.01em;margin:4px 0 6px}
+  .subline{font-family:'Zilla Slab',serif;font-weight:600;font-style:italic;
+    font-size:clamp(15px,2.6vw,18px);color:var(--soft)}
+  .permit{flex:none;border:2px solid var(--blaze);color:var(--blaze);
+    font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;letter-spacing:.1em;
+    text-transform:uppercase;text-align:center;padding:10px 14px;transform:rotate(2.5deg);
+    background:rgba(217,95,24,.05)}
+  .permit b{display:block;font-size:21px}
+  .factrow{display:flex;flex-wrap:wrap;gap:7px 24px;margin-top:14px;
+    font-family:'IBM Plex Mono',monospace;font-size:13.5px;color:var(--soft)}
+  .factrow b{color:var(--ink);font-weight:600}
+  .factrow .go b{color:var(--blaze)}
+
+  .sectlabel{font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.24em;
+    text-transform:uppercase;color:var(--pine);font-weight:600;margin:26px 0 14px;padding-bottom:6px;
+    border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:baseline}
+  .sectlabel span{color:var(--faint);letter-spacing:.04em;font-size:11.5px}
+
+  /* ── cards ── */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(345px,1fr));gap:18px}
+  .card{background:var(--card);border:2px solid var(--pine);display:flex;flex-direction:column;position:relative}
+  .card::before,.card::after{content:"";position:absolute;width:7px;height:7px;border-radius:50%;
+    background:radial-gradient(circle at 35% 35%, #d8d2c2, #6d6656);top:7px;box-shadow:0 1px 1px rgba(0,0,0,.4)}
+  .card::before{left:7px}.card::after{right:7px}
+
+  .bar{background:var(--pine);color:var(--paper);display:flex;align-items:center;
+    justify-content:space-between;gap:10px;padding:10px 14px 10px 24px}
+  .card.great .bar{background:linear-gradient(105deg,var(--pine) 60%,#7c3a10)}
+  .sp{font-family:'Zilla Slab',serif;font-weight:700;font-size:22px;line-height:1.05}
+  .sp small{display:block;font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:400;
+    letter-spacing:.12em;text-transform:uppercase;opacity:.75;margin-top:2px}
+  .clsbadge{flex:none;text-align:center;background:var(--paper);color:var(--pine);
+    width:44px;padding:3px 0 5px;font-family:'IBM Plex Mono',monospace;font-size:9px;
+    letter-spacing:.08em;text-transform:uppercase;font-weight:600}
+  .clsbadge b{display:block;font-family:'Alfa Slab One',serif;font-size:21px;font-weight:400;line-height:1}
+
+  .body{padding:13px 15px 15px;display:flex;flex-direction:column;gap:12px;flex:1}
+  .gobanner{background:rgba(217,95,24,.1);border:1.5px dashed var(--blaze);color:#9c4410;
+    font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:600;letter-spacing:.06em;
+    text-transform:uppercase;padding:6px 10px;text-align:center}
+
+  /* trophy + weight strip */
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);background:#efe8d5}
+  .st{padding:6px 4px 7px;text-align:center;border-right:1px solid var(--line)}
+  .st:last-child{border-right:none}
+  .st .l{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--soft)}
+  .st .v{font-family:'Zilla Slab',serif;font-weight:700;font-size:15.5px;margin-top:1px;line-height:1.15}
+
+  /* level ladder */
+  .block-h{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--pine);font-weight:600;margin-bottom:5px;
+    display:flex;justify-content:space-between}
+  .block-h .hint{color:var(--faint);text-transform:none;letter-spacing:0;font-size:11px}
+  .ladder{display:flex;gap:2px}
+  .lv{flex:1;text-align:center;font-family:'IBM Plex Mono',monospace;font-size:10.5px;
+    padding:5px 0;border:1px solid var(--line);color:#b3a88c;background:#efe8d5}
+  .lv.on{background:var(--pine2);border-color:var(--pine2);color:var(--paper)}
+  .lv.dia{background:var(--diamond);border-color:var(--diamond);color:#fff;font-weight:700;
+    box-shadow:0 2px 0 rgba(46,111,142,.35)}
+  .lv.gold{background:var(--gold);border-color:var(--gold);color:#fff;font-weight:700;
+    box-shadow:0 2px 0 rgba(168,120,31,.35)}
+  .lv.silver{background:var(--silver);border-color:var(--silver);color:#fff;font-weight:700;
+    box-shadow:0 2px 0 rgba(138,143,147,.35)}
+  .lv.fab{background:var(--blaze);border-color:var(--blaze);color:#fff;font-weight:700;
+    box-shadow:0 2px 0 rgba(217,95,24,.35)}
+  .lvlcap{display:flex;justify-content:space-between;gap:8px;margin-top:5px;
+    font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--soft)}
+  .lvlcap .dtxt{color:var(--diamond);font-weight:600}
+  .lvlcap .ftxt{color:var(--blaze);font-weight:600}
+
+  /* medal scores */
+  .medals{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--line)}
+  .mc{padding:6px 4px 7px;text-align:center;border-right:1px solid var(--line)}
+  .mc:last-child{border-right:none}
+  .mc .l{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--soft)}
+  .mc .v{font-family:'Zilla Slab',serif;font-weight:700;font-size:16.5px;margin-top:1px}
+  .mc.br .v{color:var(--bronze)} .mc.sv .v{color:var(--silver)} .mc.gd .v{color:var(--gold)}
+  .mc.dm{background:rgba(46,111,142,.08)} .mc.dm .v{color:var(--diamond)}
+
+  /* activity clock */
+  .clock{display:flex;height:20px;border:1px solid var(--pine);overflow:hidden}
+  .hr{flex:1}
+  .hr.feed{background:var(--feed)} .hr.drink{background:var(--drink)} .hr.rest{background:var(--rest)}
+  .ruler{display:flex;margin-top:2px;font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:var(--faint)}
+  .ruler span{flex:1;text-align:left}
+  .ruler span:last-child{flex:0;text-align:right}
+  .wins{margin-top:6px;font-size:12.5px;display:flex;flex-direction:column;gap:3px}
+  .wins b{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.06em;text-transform:uppercase;
+    padding:1px 6px;border-radius:2px;color:#fff;margin-right:6px;display:inline-block;min-width:44px;text-align:center}
+  .wins .wf b{background:var(--feed)} .wins .wd b{background:var(--drink)} .wins .wr b{background:#9a8e6d}
+
+  /* data rows */
+  .rows{display:flex;flex-direction:column}
+  .row{display:flex;gap:9px;padding:5px 0;border-bottom:1px dotted var(--line);font-size:13.5px;align-items:baseline}
+  .row:last-child{border-bottom:none}
+  .row .k{flex:none;width:72px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.08em;
+    text-transform:uppercase;color:var(--pine);font-weight:600}
+  .row .v{flex:1;color:var(--ink)}
+  .row .v .rare{color:var(--blaze);font-weight:600}
+
+  .warn{margin-top:auto;background:repeating-linear-gradient(-45deg,rgba(217,95,24,.12) 0 8px,transparent 8px 16px);
+    border:1.5px solid var(--blaze);padding:6px 10px;font-size:12px;font-weight:600;color:#8c3c0d;
+    display:flex;gap:8px;align-items:center}
+  .warn::before{content:"⚠";font-size:15.5px}
+
+  footer{margin-top:24px;padding-top:13px;border-top:3px double var(--pine);
+    font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--faint);letter-spacing:.04em;line-height:1.7}
+
+  @media (max-width:560px){
+    .grid{grid-template-columns:1fr}
+    .permit{display:none}
+    .medals{grid-template-columns:repeat(4,1fr)}
+    .lv{font-size:9px}
+  }
+</style>
+</head>
+<body>
+<div class="board">
+
+  <header class="mast">
+    <div class="crest" aria-hidden="true">
+      <svg viewBox="0 0 64 64" fill="none" stroke="#1d3a2d" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M32 8 L20 30 H26 L15 48 H49 L38 30 H44 Z" fill="rgba(29,58,45,.12)"/>
+        <path d="M12 52 H52"/><path d="M22 52 V57 M42 52 V57"/>
+      </svg>
+    </div>
+    <div class="mtxt">
+      <div class="dept">Reserve Field Register · Yukon River Basin, Alaska</div>
+      <h1>Yukon Valley</h1>
+      <div class="subline">Species register — level ladder, medal scores, activity clocks &amp; the Great One grind</div>
+      <div class="factrow">
+        <span>Area <b>64 km²</b></span>
+        <span>Warden <b>J. Murray</b></span>
+        <span>Species <b>8</b></span>
+        <span class="go">Great Ones <b>Moose · Gray Wolf · Red Fox</b></span>
+        <span>Reserve rifle <b>.300 Canning Magnum</b></span>
+      </div>
+    </div>
+    <div class="permit">Field<br>Register<b>YV-26</b></div>
+  </header>
+
+  <div class="sectlabel">Species Register <span>class order · low → high</span></div>
+  <main class="grid" id="grid"></main>
+
+  <footer id="foot"></footer>
+</div>
+
+<script>
+/* ── verified data (COTW Wiki · thehuntercotw zone sheet · community location/fur/weight data · Dec 2025 patch) ── */
+const species = [
+  { name:'Harlequin Duck', latin:'Histrionicus histrionicus', cls:1, trophy:'Weight',
+    maxlvl:3, dia:3, weight:'0.72 – 0.75 kg', gO:false,
+    br:'5.3', sv:'5.3', gd:'6.4', dm:'7.2',
+    zones:[[0,5,'rest'],[5,7,'feed'],[7,9,'rest'],[9,11,'feed'],[11,13,'rest'],[13,15,'feed'],[15,17,'rest'],[17,19,'feed'],[19,24,'rest']],
+    spots:'Rivers &amp; lakes across the map — Hansson River, Copperbowl Lake.',
+    bring:'Class 1 — birdshot / .22. Beacon Deluxe duck caller + decoy.',
+    coats:'Dark Grey, Piebald · <span class="rare">Melanistic, Albino (rare)</span>' },
+
+  { name:'Canada Goose', latin:'Branta canadensis', cls:1, trophy:'Weight',
+    maxlvl:5, dia:5, weight:'up to 9.2 kg', gO:false,
+    br:'4.4', sv:'4.4', gd:'6.8', dm:'8.5',
+    zones:[[0,5,'rest'],[5,7,'feed'],[7,9,'rest'],[9,11,'feed'],[11,13,'rest'],[13,15,'feed'],[15,17,'rest'],[17,19,'feed'],[19,24,'rest']],
+    spots:'Open water &amp; wetlands — Crowngold Wetlands / Brightwater Flats, mornings.',
+    bring:'Class 1 — birdshot / .22. Short-reed Canada goose caller + decoy.',
+    coats:'Grey-brown, Grey · <span class="rare">Leucistic, Hybrid, Albino (rare)</span>' },
+
+  { name:'Red Fox', latin:'Vulpes vulpes', cls:2, trophy:'Weight',
+    maxlvl:9, dia:9, weight:'14 – 15.4 kg', gO:true,
+    br:'4.6', sv:'4.6', gd:'10', dm:'14',
+    zones:[[0,7,'feed'],[7,17,'rest'],[17,20,'drink'],[20,24,'feed']],
+    spots:'Everywhere — highest density on the central Crimson Plain, around the crossroads &amp; lake between the south tower and north outpost.',
+    bring:'Class 2 — .223, .243, .357, 20GA. Jackrabbit predator caller.',
+    coats:'Red, Orange, Dark Red · <span class="rare">Piebald, Melanistic, Albino (rare)</span>' },
+
+  { name:'Gray Wolf', latin:'Canis lupus', cls:6, trophy:'Skull',
+    maxlvl:9, dia:9, weight:'75 – 80 kg', gO:true,
+    br:'32', sv:'32', gd:'36', dm:'39',
+    zones:[[0,3,'drink'],[3,6,'feed'],[6,18,'rest'],[18,24,'feed']],
+    spots:'West &amp; north-east — dense in the burnt forest (set a tripod). Roam in packs, no fixed herd.',
+    bring:'Class 6 — 6.5mm, .270, .30-06, 7mm. Jackrabbit / distressed-fawn callers.',
+    coats:'Grey, Brown · <span class="rare">Red Brown, Egg White, Melanistic, Albino, Acromelanistic (rare)</span>',
+    warn:'Packs go aggressive and surround you — drop the alpha (highest level) to scatter them.' },
+
+  { name:"Grant's Caribou", latin:'Rangifer tarandus granti', cls:6, trophy:'Antlers · TruRACS',
+    maxlvl:5, dia:5, weight:'186 – 190 kg', gO:false,
+    br:'152.5', sv:'152.5', gd:'311.2', dm:'430.2',
+    zones:[[0,4,'rest'],[4,8,'drink'],[8,12,'feed'],[12,16,'rest'],[16,20,'feed'],[20,24,'rest']],
+    spots:'Everywhere — the easiest species to find. Central Crimson Plain &amp; eastern areas, herds around lakes.',
+    bring:'Class 6 — .270, 6.5mm, .30-06, 7mm. Antler rattler caller.',
+    coats:'Light Brown, Dark Brown · <span class="rare">Piebald, Leucistic, Melanistic, Albino (rare)</span>' },
+
+  { name:'Grizzly Bear', latin:'Ursus arctos horribilis', cls:8, trophy:'Skull',
+    maxlvl:9, dia:9, weight:'632 – 680 kg', gO:false,
+    br:'52.6', sv:'52.6', gd:'60.8', dm:'66.9',
+    zones:[[0,4,'feed'],[4,8,'drink'],[8,20,'rest'],[20,24,'feed']],
+    spots:'South &amp; east along rivers, creeks &amp; waterways; also north &amp; west. Best at SE sandbar crossings ~06:00–08:00.',
+    bring:'Class 8 — .338, .375, .45-70, .300 Canning; .454 sidearm.',
+    coats:'Grey-Brown · <span class="rare">Brown, Melanistic, Albino (rare)</span>',
+    warn:'Charges when threatened and can flatten you — keep a fast follow-up ready.' },
+
+  { name:'Moose', latin:'Alces alces', cls:8, trophy:'Antlers · TruRACS',
+    maxlvl:5, dia:5, weight:'590 – 620 kg', gO:true,
+    br:'86.2', sv:'86.2', gd:'194', dm:'275',
+    zones:[[0,4,'rest'],[4,8,'feed'],[8,12,'rest'],[12,16,'drink'],[16,20,'feed'],[20,24,'rest']],
+    spots:'South &amp; east — travelling the paths between lake drink zones and their bedding need zones.',
+    bring:'Class 8 — .300 Canning (reserve rifle), .338, .45-70. Moose caller + moose scent.',
+    coats:'Tan, Light Brown, Brown · <span class="rare">Piebald, Mosaic, Melanistic (rare)</span>' },
+
+  { name:'Plains Bison', latin:'Bison bison bison', cls:9, trophy:'Horns',
+    maxlvl:5, dia:5, weight:'1,115 – 1,200 kg', gO:false,
+    br:'117.7', sv:'117.7', gd:'155.3', dm:'183.5',
+    zones:[[0,4,'rest'],[4,8,'feed'],[8,12,'drink'],[12,16,'rest'],[16,20,'feed'],[20,24,'rest']],
+    spots:'West &amp; central flats — herds at Crowngold Wetlands / Brightwater Flats and along Rustline Ridge overlooking the flats.',
+    bring:'Class 9 — .375, .470 NE, .45-70, 10GA slug; .454.',
+    coats:'Brown, Light Brown, Grey · <span class="rare">Leucistic, Melanistic, Albino (rare)</span>',
+    warn:'Keeps charging even after being hit — shoot from height or cover.' },
+];
+
+const grid=document.getElementById('grid');
+function hourType(zones,h){for(const z of zones){if(h>=z[0]&&h<z[1])return z[2];}return 'rest';}
+function windows(zones,type){
+  return zones.filter(z=>z[2]===type)
+    .map(z=>`${String(z[0]).padStart(2,'0')}:00–${String(z[1]===24?0:z[1]).padStart(2,'0')}:00`).join(', ');
+}
+species.forEach(a=>{
+  let cells='';
+  for(let h=0;h<24;h++) cells+=`<div class="hr ${hourType(a.zones,h)}"></div>`;
+  const feed=windows(a.zones,'feed'), drink=windows(a.zones,'drink'), rest=windows(a.zones,'rest');
+
+  let lvls='';
+  for(let i=1;i<=10;i++){
+    let c='lv';
+    if(i===10 && a.gO) c='lv fab';
+    else if(i===a.dia) c='lv dia';
+    else if(i===a.maxlvl-1) c='lv gold';
+    else if(i===a.maxlvl-2) c='lv silver';
+    else if(i<=a.maxlvl) c='lv on';
+    lvls += `<div class="${c}">${i}</div>`;
+  }
+
+  const card=document.createElement('article');
+  card.className='card'+(a.gO?' great':'');
+  card.innerHTML=`
+    <div class="bar">
+      <div class="sp">${a.name}<small>${a.latin}</small></div>
+      <div class="clsbadge">class<b>${a.cls}</b></div>
+    </div>
+    <div class="body">
+      ${a.gO?'<div class="gobanner">★ Great One species — Fabled Lv 10</div>':''}
+      <div class="stats">
+        <div class="st"><div class="l">Trophy</div><div class="v">${a.trophy.split(' · ')[0]}</div></div>
+        <div class="st"><div class="l">Weight</div><div class="v">${a.weight}</div></div>
+        <div class="st"><div class="l">Max level</div><div class="v">${a.maxlvl}${a.gO?' (+10)':''}</div></div>
+      </div>
+      <div>
+        <div class="block-h">Level ladder <span class="hint">1 – 10</span></div>
+        <div class="ladder">${lvls}</div>
+        <div class="lvlcap">
+          <span>Spawns Lv 1–${a.maxlvl}</span>
+          <span class="dtxt">◆ Diamond: Lv ${a.dia}${a.dia>1?` (rarely ${a.dia-1})`:''}</span>
+          ${a.gO?'<span class="ftxt">★ Lv 10</span>':''}
+        </div>
+      </div>
+      <div class="medals">
+        <div class="mc br"><div class="l">Bronze</div><div class="v">&lt;${a.br}</div></div>
+        <div class="mc sv"><div class="l">Silver</div><div class="v">${a.sv}</div></div>
+        <div class="mc gd"><div class="l">Gold</div><div class="v">${a.gd}</div></div>
+        <div class="mc dm"><div class="l">Diamond</div><div class="v">${a.dm}</div></div>
+      </div>
+      <div>
+        <div class="block-h">Activity · 24h</div>
+        <div class="clock">${cells}</div>
+        <div class="ruler"><span>0</span><span>6</span><span>12</span><span>18</span><span>24</span></div>
+        <div class="wins">
+          <div class="wf"><b>Feed</b>${feed||'—'}</div>
+          ${drink?`<div class="wd"><b>Drink</b>${drink}</div>`:''}
+          <div class="wr"><b>Rest</b>${rest||'—'}</div>
+        </div>
+      </div>
+      <div class="rows">
+        <div class="row"><div class="k">Hot spots</div><div class="v">${a.spots}</div></div>
+        <div class="row"><div class="k">Bring</div><div class="v">${a.bring}</div></div>
+        <div class="row"><div class="k">Coats</div><div class="v">${a.coats}</div></div>
+      </div>
+      ${a.warn?`<div class="warn">${a.warn}</div>`:''}
+    </div>`;
+  grid.appendChild(card);
+});
+
+document.getElementById('foot').innerHTML=`
+  Medal tiers by % of max trophy rating: Bronze &lt;20% · Silver 20–60% · Gold 60–90% · Diamond ≥90%. Diamond spawns at max level or one below.
+  Level ladder colors (green → silver → gold → blue → orange) show the level range most likely to yield each medal — actual medal depends on trophy score, not level alone.<br>
+  Weight ranges reflect the upper (trophy-relevant) portion of each species' weight distribution, not newborn/runt minimums. Great One spawn odds are unofficial community estimates, not guaranteed figures.<br>
+  Sources: theHunter COTW Wiki · thehuntercotw zone-time sheet · community location, fur &amp; weight data · verified to Dec 2025 patch.`;
+</script>
+</body>
+</html>
