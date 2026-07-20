@@ -9,8 +9,8 @@ parchment paper, pine green + blaze orange, specimen cards.
 React 19 + Vite + TypeScript, `react-router-dom` (hash routing, so GitHub Pages
 needs no 404 tricks). No UI framework — the stylesheet in
 [src/index.css](src/index.css) is a direct port of the original
-`yukon-valley-chart.html` reference, which remains in the repo root as the
-visual ground truth.
+[docs/yukon-valley-chart.html](docs/yukon-valley-chart.html) reference, which
+remains in the repo as the visual ground truth.
 
 ## Commands
 
