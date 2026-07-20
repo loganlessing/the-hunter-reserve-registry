@@ -81,6 +81,7 @@ React 19 + Vite + TypeScript, `react-router-dom` with **hash routing** (so
 GitHub Pages needs no 404 rewrite tricks). No UI framework.
 
 ```
+CLAUDE.md                      Auto-loaded session entry point — points here
 .github/workflows/deploy.yml   CI: build + publish to GitHub Pages
 docs/                          Reference material & verified rosters
   project-handoff.md           ← this file
@@ -93,6 +94,8 @@ src/
   components/                  One shared set, renders ANY reserve
     Masthead.tsx  ReserveNav.tsx  ReservePage.tsx
     SpeciesCard.tsx  LevelLadder.tsx  MedalRow.tsx  ActivityClock.tsx
+  hooks/
+    useReveal.ts               Scroll-reveal IntersectionObserver (fails open)
   data/
     types.ts                   Reserve / Species / ReserveTheme
     reserves/
@@ -105,6 +108,22 @@ src/
 
 **The core architectural rule:** adding a reserve is *adding a data file*, never
 writing new components. One shared component set renders every reserve.
+
+### Motion layer
+
+Deliberately restrained — a placard lifting off a board, not dashboard flair:
+
+- **Hover lift:** cards rise 5px with a deepening shadow (`.card:hover` in
+  `index.css`); the corner rivets catch more light as they lift.
+- **Scroll reveal:** cards fade/rise into place on first viewport entry,
+  staggered ~45ms across a row (capped at 5 steps via `--i`). Driven by
+  `useReveal`, which **fails open**: elements already in or above the viewport,
+  browsers without IntersectionObserver, and reduced-motion users are revealed
+  immediately. The sheet is read mid-hunt — motion must never hide data.
+- The reveal animation uses `backwards` fill (holds the from-state through the
+  stagger delay — without it delayed cards flash) and deliberately omits
+  `forwards` (a held end-state would override the `:hover` transform).
+- Everything is disabled under `prefers-reduced-motion: reduce`.
 
 ### Data model (`src/data/types.ts`)
 
@@ -287,6 +306,9 @@ source-only.
 | Hirschfelden | 9 | 6 — Pheasant, Red Fox, Roe, Boar, Fallow, Red Deer |
 | Layton Lake District | 9 | 3 — Whitetail, Black Bear, Moose |
 
+All four are deployed, type-checked by CI, and verified live (owner reviewed
+the four-reserve site plus the motion layer and approved the look, Jul 2026).
+
 **Repo hygiene done:** `.gitignore` added and `node_modules/`, `dist/`, and
 `*.tsbuildinfo` untracked (~2,770 files had been committed). Reference docs
 consolidated into `docs/` — the original handoff had been sitting inside
@@ -294,11 +316,6 @@ consolidated into `docs/` — the original handoff had been sitting inside
 
 ### Open items
 
-- **Three of the four reserves have never been compiled or rendered.** Silver
-  Ridge Peaks, Hirschfelden, and Layton Lake District were validated by script
-  (zone tiling, class order, 18/18 theme tokens, medal ordering,
-  `bronze === silver`) but never type-checked or seen in a browser, because the
-  authoring environment has no Node. **Pushing is the first real verification.**
 - **Yukon's Great One data is incomplete.** Per–Great One Fabled coat lists and
   herd-management grind notes were never captured in `yukon-valley.ts`. The
   other three rosters carry this data; Yukon's does not. Flagged as
@@ -308,11 +325,11 @@ consolidated into `docs/` — the original handoff had been sitting inside
   given and flagged in `footerNotes`; worth one in-game confirm.
 - **Hirschfelden — Red Deer Fabled furs.** Historically Spotted only; a Dec 2025
   remodel may have expanded the set. Flagged rather than guessed.
-- **Nav length.** Four reserves now, one with a long name ("Hirschfelden
-  Hunting Reserve"). Worth an eye on how `ReserveNav` wraps at narrow widths.
-- **No local build possible in the current sandbox** — Node/npm are not on PATH,
-  so `npm run build`, `npm run dev`, and browser preview all fail there. CI is
-  the only verification path from that environment. On a normal machine:
+- **Environment note:** some authoring environments (e.g. the sandboxed
+  desktop-app session this was built in) have no Node/npm on PATH, so
+  `npm run build` and `npm run dev` fail there. In that case, validate data
+  files by script (zone tiling, class order, theme tokens, medal shape) and
+  treat the CI build on push as the type-check. On a normal machine:
   `npm install && npm run dev`.
 
 ---
