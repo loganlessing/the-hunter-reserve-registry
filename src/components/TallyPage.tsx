@@ -12,9 +12,21 @@ interface Grind {
 }
 
 /**
+ * Animals pinned to the top of the list — whatever grind is currently active,
+ * so it's the first thing under the thumb mid-hunt. Edit this to re-order;
+ * everything else falls back to class order.
+ */
+const PINNED = ['Black Bear']
+
+function pinRank(name: string) {
+  const i = PINNED.indexOf(name)
+  return i === -1 ? PINNED.length : i
+}
+
+/**
  * One entry per Great One animal, not per reserve: a Red Fox is a Red Fox
- * whether it dropped on Yukon or Hirschfelden. Class order matches the species
- * register's low → high convention.
+ * whether it dropped on Yukon or Hirschfelden. Pinned animals lead; the rest
+ * follow in class order, matching the species register's low → high convention.
  */
 const grinds: Grind[] = (() => {
   const byName = new Map<string, Grind>()
@@ -26,9 +38,12 @@ const grinds: Grind[] = (() => {
       else byName.set(s.name, { species: s, reserves: [r.name] })
     }
   }
-  return [...byName.values()].sort(
-    (a, b) => a.species.cls - b.species.cls || a.species.name.localeCompare(b.species.name),
-  )
+  return [...byName.values()].sort((a, b) => {
+    const ra = pinRank(a.species.name)
+    const rb = pinRank(b.species.name)
+    if (ra !== rb) return ra - rb
+    return a.species.cls - b.species.cls || a.species.name.localeCompare(b.species.name)
+  })
 })()
 
 export default function TallyPage() {
@@ -106,7 +121,7 @@ export default function TallyPage() {
         </div>
 
         <div className="sectlabel">
-          Great One Species <span>class order · low → high</span>
+          Great One Species <span>active grind first · then class order</span>
         </div>
         <main className="grid tallylist">
           {grinds.map((g, i) => {

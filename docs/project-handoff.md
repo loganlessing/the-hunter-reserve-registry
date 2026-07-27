@@ -152,8 +152,12 @@ A kill counter for the Great One grind — the only stateful feature in the app.
 - **One tally per animal, not per reserve.** The key is the species name
   (`tallyKey()`), so a Red Fox counts the same whether it dropped on Yukon or
   Hirschfelden. Each card lists the reserves that animal appears on. The 14
-  reserve-level Great One entries dedupe to **11 unique animals**, sorted by
-  class to match the register's low → high convention.
+  reserve-level Great One entries dedupe to **11 unique animals**.
+- **Order:** the `PINNED` array at the top of `TallyPage.tsx` leads the list —
+  it holds whatever grind is active, so it sits under the thumb mid-hunt
+  (currently `['Black Bear']`). Everything else follows in class order, matching
+  the register's low → high convention. Re-order by editing that array; an empty
+  array restores pure class order.
 - **Which animals appear:** derived from the registry — every species with
   `greatOne: true`, deduped by name. Adding a reserve with Great Ones extends
   this tab automatically (a new animal gets a card; an existing one just gains
