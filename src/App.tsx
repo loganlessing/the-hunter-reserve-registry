@@ -1,6 +1,7 @@
 import { HashRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { reserves } from './data/reserves'
 import ReservePage from './components/ReservePage'
+import TallyPage from './components/TallyPage'
 
 export default function App() {
   return (
@@ -8,6 +9,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<Navigate to={`/reserves/${reserves[0].id}`} replace />} />
         <Route path="/reserves/:reserveId" element={<ReservePage />} />
+        <Route path="/tally" element={<TallyPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </HashRouter>

@@ -17,10 +17,18 @@ project's state changes — it exists so any fresh session can pick this up.
 2. **Adding a reserve = adding a data file** (`src/data/reserves/<id>.ts`) and
    registering it in `src/data/reserves/index.ts`. Never new components. Full
    recipe with the roster→TypeScript field mapping: project-handoff §"Adding a
-   new reserve".
+   new reserve". A reserve's Great Ones flow into the tally tab automatically —
+   no wiring.
 3. **Keep the field-register identity** — printed placard, not a dashboard.
    Layout, fonts, ladder tiers, Bronze `<` prefix, hazard stripes are all
    deliberate; don't restyle without being asked.
+
+## Layout
+
+Two tabs, both served by `ReserveNav`: `#/reserves/:id` (the species register,
+one per registry entry) and `#/tally` (Great One kill counter, spans all
+reserves, saved to localStorage). Any page rendering `.app` must set the theme
+via `themeVars()` from `src/theme.ts`.
 
 ## Commands
 

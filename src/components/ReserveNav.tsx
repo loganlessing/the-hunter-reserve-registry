@@ -14,6 +14,13 @@ export default function ReserveNav() {
           {r.name}
         </NavLink>
       ))}
+      <span className="rnav-gap" aria-hidden="true" />
+      <NavLink
+        to="/tally"
+        className={({ isActive }) => 'rnav-link rnav-tally' + (isActive ? ' active' : '')}
+      >
+        ★ Great One Tally
+      </NavLink>
     </nav>
   )
 }

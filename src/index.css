@@ -250,9 +250,90 @@ html { scroll-behavior: smooth }
   .card.reveal, .card.reveal.revealed { opacity: 1; animation: none }
 }
 
+/* ── great one tally ──
+   Same riveted placard as a species card, with the register's medal colors
+   carried onto the counters so a tally reads like the score row it mirrors. */
+.rnav-gap { flex: 1 }
+.rnav-tally { border-color: var(--accent); color: var(--accent-text) }
+.rnav-tally:hover { background: color-mix(in srgb, var(--accent) 12%, transparent) }
+.rnav-tally.active { background: var(--accent); border-color: var(--accent); color: #fff }
+
+/* running totals across every reserve */
+.grandrow {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  border: 2px solid var(--primary); background: var(--well);
+}
+.gr { padding: 10px 6px 12px; text-align: center; border-right: 1px solid var(--line) }
+.gr:last-child { border-right: none }
+.gr .l {
+  font-family: 'IBM Plex Mono', monospace; font-size: 9.5px; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--soft);
+}
+.gr .v { font-family: 'Alfa Slab One', serif; font-size: 30px; line-height: 1.1; margin-top: 2px }
+.gr-dm { background: color-mix(in srgb, var(--diamond) 8%, transparent) }
+.gr-dm .v { color: var(--diamond) }
+.gr-gd .v { color: var(--gold) }
+.gr-sv .v { color: var(--silver) }
+.gr-tt { background: color-mix(in srgb, var(--primary) 7%, transparent) }
+.gr-tt .v { color: var(--primary) }
+
+/* per-grind counter card */
+.tallycard .clsbadge b { font-size: 19px }
+.tallygrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px }
+.tb {
+  border: 1px solid var(--line); background: var(--well);
+  padding: 7px 5px 8px; text-align: center; display: flex; flex-direction: column; gap: 5px;
+}
+.tb .l {
+  font-family: 'IBM Plex Mono', monospace; font-size: 9px; letter-spacing: .1em;
+  text-transform: uppercase; color: var(--soft); line-height: 1.3;
+}
+.tb .v { font-family: 'Alfa Slab One', serif; font-size: 27px; line-height: 1 }
+.tb-diamond { background: color-mix(in srgb, var(--diamond) 9%, transparent) }
+.tb-diamond .v { color: var(--diamond) }
+.tb-gold .v { color: var(--gold) }
+.tb-lesser .v { color: var(--silver) }
+
+.tbtns { display: flex; gap: 4px; justify-content: center; margin-top: auto }
+.tbtn {
+  flex: 1; max-width: 46px; min-height: 34px; cursor: pointer;
+  font-family: 'IBM Plex Mono', monospace; font-size: 17px; font-weight: 600; line-height: 1;
+  border: 1.5px solid var(--primary); background: var(--card); color: var(--primary);
+  transition: background .15s ease, color .15s ease, transform .1s ease;
+}
+.tbtn:hover:not(:disabled) { background: var(--primary); color: var(--paper) }
+.tbtn:active:not(:disabled) { transform: translateY(1px) }
+.tbtn.plus { border-color: var(--accent); color: var(--accent-text) }
+.tbtn.plus:hover { background: var(--accent); color: #fff }
+.tbtn:disabled { opacity: .3; cursor: default }
+.tbtn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
+
+.tallyfoot {
+  margin-top: auto; padding-top: 4px; display: flex; align-items: center;
+  justify-content: space-between; gap: 8px; flex-wrap: wrap;
+  font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: var(--faint);
+}
+.resetbtn {
+  cursor: pointer; font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+  letter-spacing: .08em; text-transform: uppercase; padding: 4px 9px;
+  border: 1px solid var(--line); background: transparent; color: var(--soft);
+}
+.resetbtn:hover { border-color: var(--accent); color: var(--accent-text) }
+.resetbtn.armed { border-color: var(--accent); background: var(--accent); color: #fff }
+.resetbtn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
+
+@media (prefers-reduced-motion: reduce) {
+  .tbtn { transition: none }
+  .tbtn:active:not(:disabled) { transform: none }
+}
+
 @media (max-width: 560px) {
   .grid { grid-template-columns: 1fr }
   .permit { display: none }
   .medals { grid-template-columns: repeat(4, 1fr) }
   .lv { font-size: 9px }
+  .rnav-gap { display: none }
+  .grandrow { grid-template-columns: repeat(2, 1fr) }
+  .gr:nth-child(2) { border-right: none }
+  .gr:nth-child(-n+2) { border-bottom: 1px solid var(--line) }
 }

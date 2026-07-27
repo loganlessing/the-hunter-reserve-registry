@@ -91,11 +91,14 @@ docs/                          Reference material & verified rosters
   layton-lake-roster.md        Verified roster, Layton Lake District
 src/
   App.tsx  main.tsx  index.css  vite-env.d.ts
+  theme.ts                     themeVars() — palette → CSS custom properties
   components/                  One shared set, renders ANY reserve
     Masthead.tsx  ReserveNav.tsx  ReservePage.tsx
     SpeciesCard.tsx  LevelLadder.tsx  MedalRow.tsx  ActivityClock.tsx
+    TallyPage.tsx  TallyCard.tsx     Great One tally tab
   hooks/
     useReveal.ts               Scroll-reveal IntersectionObserver (fails open)
+    useTally.ts                Great One counts, localStorage-backed
   data/
     types.ts                   Reserve / Species / ReserveTheme
     reserves/
@@ -108,6 +111,20 @@ src/
 
 **The core architectural rule:** adding a reserve is *adding a data file*, never
 writing new components. One shared component set renders every reserve.
+
+### Routes
+
+Two tabs, both reachable from `ReserveNav` (which renders on every page):
+
+| Route | Page | Notes |
+|---|---|---|
+| `#/reserves/:reserveId` | `ReservePage` | One per registry entry; unknown ids redirect to the first reserve |
+| `#/tally` | `TallyPage` | Great One kill counter — spans all reserves |
+
+`themeVars()` in `src/theme.ts` maps a reserve palette onto the CSS variables
+`index.css` reads. Any page rendering `.app` must set them; the tally tab uses
+the first reserve's palette (the pine/blaze template) since it isn't tied to one
+reserve.
 
 ### Motion layer
 
@@ -124,6 +141,29 @@ Deliberately restrained — a placard lifting off a board, not dashboard flair:
   stagger delay — without it delayed cards flash) and deliberately omits
   `forwards` (a held end-state would override the `:hover` transform).
 - Everything is disabled under `prefers-reduced-motion: reduce`.
+
+### Great One tally (`#/tally`)
+
+A kill counter for the Great One grind — the only stateful feature in the app.
+
+- **What it tracks:** three buckets per grind — `diamond`, `gold`, and `lesser`
+  ("Silver or less", pooling everything below Gold). Buckets are the medal the
+  animal actually scored, not its level.
+- **One grind per reserve+species.** The key is `<reserveId>::<species name>`,
+  so Red Fox on Yukon and Red Fox on Hirschfelden tally separately — they're
+  different grinds. `tallyKey()` builds it; never key on species name alone.
+- **Which species appear:** derived from the registry — every species with
+  `greatOne: true`, grouped by reserve. Adding a reserve with Great Ones adds
+  its grinds to this tab automatically. No wiring needed.
+- **Persistence:** `localStorage` under `cotw-great-one-tally-v1`, handled by
+  `useTally`. Storage is **best-effort by design** — a blocked or full store
+  (private windows, quota, embedded webviews) degrades to an in-memory tally
+  rather than crashing. Stored values are re-validated on read, so hand-edited
+  or corrupt JSON can't break the page.
+- **Counts never go below zero.** `–` undoes a misclick; Reset is two-stage
+  (arm, then confirm within 4s) so one stray tap can't wipe a long grind.
+- If the bucket set ever changes, bump the storage key suffix (`-v1`) rather
+  than silently reinterpreting saved data.
 
 ### Data model (`src/data/types.ts`)
 
@@ -308,6 +348,9 @@ source-only.
 
 All four are deployed, type-checked by CI, and verified live (owner reviewed
 the four-reserve site plus the motion layer and approved the look, Jul 2026).
+
+**14 Great One grinds** across those reserves feed the `#/tally` tab
+automatically (3 + 2 + 6 + 3).
 
 **Repo hygiene done:** `.gitignore` added and `node_modules/`, `dist/`, and
 `*.tsbuildinfo` untracked (~2,770 files had been committed). Reference docs
