@@ -146,24 +146,33 @@ Deliberately restrained — a placard lifting off a board, not dashboard flair:
 
 A kill counter for the Great One grind — the only stateful feature in the app.
 
-- **What it tracks:** three buckets per grind — `diamond`, `gold`, and `lesser`
+- **What it tracks:** three buckets per animal — `diamond`, `gold`, and `lesser`
   ("Silver or less", pooling everything below Gold). Buckets are the medal the
   animal actually scored, not its level.
-- **One grind per reserve+species.** The key is `<reserveId>::<species name>`,
-  so Red Fox on Yukon and Red Fox on Hirschfelden tally separately — they're
-  different grinds. `tallyKey()` builds it; never key on species name alone.
-- **Which species appear:** derived from the registry — every species with
-  `greatOne: true`, grouped by reserve. Adding a reserve with Great Ones adds
-  its grinds to this tab automatically. No wiring needed.
-- **Persistence:** `localStorage` under `cotw-great-one-tally-v1`, handled by
+- **One tally per animal, not per reserve.** The key is the species name
+  (`tallyKey()`), so a Red Fox counts the same whether it dropped on Yukon or
+  Hirschfelden. Each card lists the reserves that animal appears on. The 14
+  reserve-level Great One entries dedupe to **11 unique animals**, sorted by
+  class to match the register's low → high convention.
+- **Which animals appear:** derived from the registry — every species with
+  `greatOne: true`, deduped by name. Adding a reserve with Great Ones extends
+  this tab automatically (a new animal gets a card; an existing one just gains
+  a reserve in its "Found on" line). No wiring needed.
+- **Layout:** one full-width ledger row per animal — placard bar on top, then
+  "Found on" meta at the left and the three counters filling the rest. Folds to
+  a stack under 560px rather than squeezing three counters side by side.
+- **Persistence:** `localStorage` under `cotw-great-one-tally-v2`, handled by
   `useTally`. Storage is **best-effort by design** — a blocked or full store
   (private windows, quota, embedded webviews) degrades to an in-memory tally
   rather than crashing. Stored values are re-validated on read, so hand-edited
   or corrupt JSON can't break the page.
 - **Counts never go below zero.** `–` undoes a misclick; Reset is two-stage
   (arm, then confirm within 4s) so one stray tap can't wipe a long grind.
-- If the bucket set ever changes, bump the storage key suffix (`-v1`) rather
-  than silently reinterpreting saved data.
+- **Key versioning:** v1 keyed `<reserveId>::<species>` from the original
+  per-reserve grouping. `load()` migrates it on first read by summing each
+  species across reserves, and leaves v1 in place so the change stays
+  reversible. If the bucket set or keying changes again, bump the suffix and
+  add a migration the same way — never silently reinterpret saved counts.
 
 ### Data model (`src/data/types.ts`)
 
@@ -349,8 +358,9 @@ source-only.
 All four are deployed, type-checked by CI, and verified live (owner reviewed
 the four-reserve site plus the motion layer and approved the look, Jul 2026).
 
-**14 Great One grinds** across those reserves feed the `#/tally` tab
-automatically (3 + 2 + 6 + 3).
+Their Great Ones (3 + 2 + 6 + 3 = 14 reserve entries) dedupe to **11 unique
+animals** on the `#/tally` tab — Red Fox, Black Bear, and Moose each appear on
+two reserves and share one tally.
 
 **Repo hygiene done:** `.gitignore` added and `node_modules/`, `dist/`, and
 `*.tsbuildinfo` untracked (~2,770 files had been committed). Reference docs

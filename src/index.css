@@ -277,9 +277,25 @@ html { scroll-behavior: smooth }
 .gr-tt { background: color-mix(in srgb, var(--primary) 7%, transparent) }
 .gr-tt .v { color: var(--primary) }
 
-/* per-grind counter card */
-.tallycard .clsbadge b { font-size: 19px }
-.tallygrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px }
+/* per-animal counter row — one full-width ledger line per Great One */
+.tallylist { grid-template-columns: 1fr; gap: 14px }
+.tallyrow .clsbadge { width: 58px }
+.tallyrow .clsbadge b { font-size: 19px }
+.trbody { flex-direction: row; align-items: center; gap: clamp(12px, 3vw, 28px); flex-wrap: wrap }
+.trmeta {
+  flex: 1 1 210px; min-width: 170px; display: flex; flex-direction: column;
+  gap: 5px; align-items: flex-start;
+}
+.trwhere { font-size: 13.5px; color: var(--ink); line-height: 1.35 }
+.trwhere .k {
+  display: block; font-family: 'IBM Plex Mono', monospace; font-size: 10px;
+  letter-spacing: .08em; text-transform: uppercase; color: var(--primary); font-weight: 600;
+}
+.trspec {
+  font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .04em;
+  color: var(--faint);
+}
+.tallygrid { flex: 2 1 400px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px }
 .tb {
   border: 1px solid var(--line); background: var(--well);
   padding: 7px 5px 8px; text-align: center; display: flex; flex-direction: column; gap: 5px;
@@ -308,11 +324,6 @@ html { scroll-behavior: smooth }
 .tbtn:disabled { opacity: .3; cursor: default }
 .tbtn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px }
 
-.tallyfoot {
-  margin-top: auto; padding-top: 4px; display: flex; align-items: center;
-  justify-content: space-between; gap: 8px; flex-wrap: wrap;
-  font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; color: var(--faint);
-}
 .resetbtn {
   cursor: pointer; font-family: 'IBM Plex Mono', monospace; font-size: 10px;
   letter-spacing: .08em; text-transform: uppercase; padding: 4px 9px;
@@ -336,4 +347,8 @@ html { scroll-behavior: smooth }
   .grandrow { grid-template-columns: repeat(2, 1fr) }
   .gr:nth-child(2) { border-right: none }
   .gr:nth-child(-n+2) { border-bottom: 1px solid var(--line) }
+  /* the ledger line folds into a stack rather than squeezing three counters */
+  .trbody { flex-direction: column; align-items: stretch; gap: 12px }
+  .tallygrid { flex: none }
+  .tb .v { font-size: 24px }
 }

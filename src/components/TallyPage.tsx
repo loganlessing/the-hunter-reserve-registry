@@ -1,30 +1,50 @@
 import { reserves } from '../data/reserves'
+import type { Species } from '../data/types'
 import { themeVars } from '../theme'
 import useTally, { emptyCounts, tallyKey, total, type Counts } from '../hooks/useTally'
 import ReserveNav from './ReserveNav'
 import TallyCard from './TallyCard'
 
-/** Every Great One grind in the registry, grouped by reserve. */
-const groups = reserves
-  .map((r) => ({ reserve: r, species: r.species.filter((s) => s.greatOne) }))
-  .filter((g) => g.species.length > 0)
+interface Grind {
+  species: Species
+  /** Every reserve this animal appears on — one shared tally covers them all. */
+  reserves: string[]
+}
+
+/**
+ * One entry per Great One animal, not per reserve: a Red Fox is a Red Fox
+ * whether it dropped on Yukon or Hirschfelden. Class order matches the species
+ * register's low → high convention.
+ */
+const grinds: Grind[] = (() => {
+  const byName = new Map<string, Grind>()
+  for (const r of reserves) {
+    for (const s of r.species) {
+      if (!s.greatOne) continue
+      const found = byName.get(s.name)
+      if (found) found.reserves.push(r.name)
+      else byName.set(s.name, { species: s, reserves: [r.name] })
+    }
+  }
+  return [...byName.values()].sort(
+    (a, b) => a.species.cls - b.species.cls || a.species.name.localeCompare(b.species.name),
+  )
+})()
 
 export default function TallyPage() {
   const { counts, bump, clear, ready } = useTally()
 
-  /* The tally spans every reserve, so it uses the first reserve's palette —
-     the pine/blaze template the register is built on. */
-  const grand = groups.reduce<Counts>((acc, g) => {
-    for (const s of g.species) {
-      const c = counts(tallyKey(g.reserve.id, s.name))
-      acc.diamond += c.diamond
-      acc.gold += c.gold
-      acc.lesser += c.lesser
-    }
+  const grand = grinds.reduce<Counts>((acc, g) => {
+    const c = counts(tallyKey(g.species.name))
+    acc.diamond += c.diamond
+    acc.gold += c.gold
+    acc.lesser += c.lesser
     return acc
   }, emptyCounts())
 
   return (
+    /* Spans every reserve, so it wears the first reserve's palette — the
+       pine/blaze template the register is built on. */
     <div className="app" style={themeVars(reserves[0].theme)}>
       <div className="board">
         <ReserveNav />
@@ -47,7 +67,7 @@ export default function TallyPage() {
             </div>
             <div className="factrow">
               <span>
-                Grinds tracked <b>{groups.reduce((n, g) => n + g.species.length, 0)}</b>
+                Animals tracked <b>{grinds.length}</b>
               </span>
               <span>
                 Total kills <b>{total(grand)}</b>
@@ -64,7 +84,7 @@ export default function TallyPage() {
         </div>
 
         <div className="sectlabel">
-          Running Totals <span>all reserves</span>
+          Running Totals <span>all animals</span>
         </div>
         <div className="grandrow">
           <div className="gr gr-dm">
@@ -85,39 +105,36 @@ export default function TallyPage() {
           </div>
         </div>
 
-        {groups.map((g) => (
-          <section key={g.reserve.id}>
-            <div className="sectlabel">
-              {g.reserve.name}{' '}
-              <span>
-                {g.species.length} great one{g.species.length > 1 ? 's' : ''}
-              </span>
-            </div>
-            <div className="grid">
-              {g.species.map((s, i) => {
-                const key = tallyKey(g.reserve.id, s.name)
-                return (
-                  <TallyCard
-                    key={key}
-                    species={s}
-                    index={i}
-                    counts={counts(key)}
-                    onBump={(bucket, delta) => bump(key, bucket, delta)}
-                    onClear={() => clear(key)}
-                  />
-                )
-              })}
-            </div>
-          </section>
-        ))}
+        <div className="sectlabel">
+          Great One Species <span>class order · low → high</span>
+        </div>
+        <main className="grid tallylist">
+          {grinds.map((g, i) => {
+            const key = tallyKey(g.species.name)
+            return (
+              <TallyCard
+                key={key}
+                species={g.species}
+                reserves={g.reserves}
+                index={i}
+                counts={counts(key)}
+                onBump={(bucket, delta) => bump(key, bucket, delta)}
+                onClear={() => clear(key)}
+              />
+            )
+          })}
+        </main>
 
         <footer>
-          Counts are saved in this browser only (localStorage) — they are not synced
-          between devices, and clearing site data clears the tally. If storage is
-          blocked, the counter still works for the current session.
+          One tally per animal, pooled across every reserve it appears on — a Red
+          Fox counts the same whether it dropped on Yukon Valley or Hirschfelden.
           <br />
           Buckets follow the medal the animal scored: Diamond, Gold, and everything
           below Gold pooled as Silver or less. Use – to undo a misclick.
+          <br />
+          Counts are saved in this browser only (localStorage) — they are not synced
+          between devices, and clearing site data clears the tally. If storage is
+          blocked, the counter still works for the current session.
           {!ready && <> <br />Loading saved tally…</>}
         </footer>
       </div>

@@ -5,13 +5,22 @@ import { BUCKETS, BUCKET_LABEL, type Bucket, type Counts, total } from '../hooks
 
 interface Props {
   species: Species
+  /** Reserves this animal can be hunted on — the tally pools all of them. */
+  reserves: string[]
   counts: Counts
   onBump: (bucket: Bucket, delta: number) => void
   onClear: () => void
   index: number
 }
 
-export default function TallyCard({ species: s, counts, onBump, onClear, index }: Props) {
+export default function TallyCard({
+  species: s,
+  reserves,
+  counts,
+  onBump,
+  onClear,
+  index,
+}: Props) {
   const ref = useReveal<HTMLElement>()
   const [armed, setArmed] = useState(false)
   const kills = total(counts)
@@ -26,7 +35,7 @@ export default function TallyCard({ species: s, counts, onBump, onClear, index }
   return (
     <article
       ref={ref}
-      className="card tallycard reveal"
+      className="card tallyrow reveal"
       style={{ '--i': index } as CSSProperties}
     >
       <div className="bar">
@@ -39,7 +48,33 @@ export default function TallyCard({ species: s, counts, onBump, onClear, index }
         </div>
       </div>
 
-      <div className="body">
+      <div className="body trbody">
+        <div className="trmeta">
+          <div className="trwhere">
+            <span className="k">Found on</span>
+            {reserves.join(' · ')}
+          </div>
+          <div className="trspec">
+            Class {s.cls} · max Lv {s.maxLevel} · Fabled Lv 10
+          </div>
+          {kills > 0 && (
+            <button
+              type="button"
+              className={'resetbtn' + (armed ? ' armed' : '')}
+              onClick={() => {
+                if (armed) {
+                  onClear()
+                  setArmed(false)
+                } else {
+                  setArmed(true)
+                }
+              }}
+            >
+              {armed ? 'Tap again to clear' : 'Reset'}
+            </button>
+          )}
+        </div>
+
         <div className="tallygrid">
           {BUCKETS.map((b) => (
             <div key={b} className={'tb tb-' + b}>
@@ -66,28 +101,6 @@ export default function TallyCard({ species: s, counts, onBump, onClear, index }
               </div>
             </div>
           ))}
-        </div>
-
-        <div className="tallyfoot">
-          <span>
-            Fabled Lv 10 · max Lv {s.maxLevel} · class {s.cls}
-          </span>
-          {kills > 0 && (
-            <button
-              type="button"
-              className={'resetbtn' + (armed ? ' armed' : '')}
-              onClick={() => {
-                if (armed) {
-                  onClear()
-                  setArmed(false)
-                } else {
-                  setArmed(true)
-                }
-              }}
-            >
-              {armed ? 'Tap again to clear' : 'Reset'}
-            </button>
-          )}
         </div>
       </div>
     </article>

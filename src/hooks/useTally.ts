@@ -13,14 +13,16 @@ export const BUCKET_LABEL: Record<Bucket, string> = {
 
 export type Counts = Record<Bucket, number>
 
-/** Keyed `<reserveId>::<species name>` — the same species on two reserves is
- *  two separate grinds, so they tally independently. */
+/** Keyed by species name — one tally per animal, pooled across every reserve
+ *  it appears on. */
 export type TallyState = Record<string, Counts>
 
-const KEY = 'cotw-great-one-tally-v1'
+const KEY = 'cotw-great-one-tally-v2'
+/** v1 keyed `<reserveId>::<species>`; counts are summed per species on read. */
+const LEGACY_KEY = 'cotw-great-one-tally-v1'
 
-export function tallyKey(reserveId: string, species: string) {
-  return `${reserveId}::${species}`
+export function tallyKey(species: string) {
+  return species
 }
 
 export function emptyCounts(): Counts {
@@ -41,12 +43,12 @@ function num(v: unknown): number {
  * full localStorage (private windows, quota, embedded webviews) must degrade to
  * an in-memory tally, never a crash or a blank page.
  */
-function load(): TallyState {
+function read(key: string): TallyState | null {
   try {
-    const raw = window.localStorage.getItem(KEY)
-    if (!raw) return {}
+    const raw = window.localStorage.getItem(key)
+    if (raw === null) return null
     const parsed: unknown = JSON.parse(raw)
-    if (!parsed || typeof parsed !== 'object') return {}
+    if (!parsed || typeof parsed !== 'object') return null
 
     const out: TallyState = {}
     for (const [k, v] of Object.entries(parsed as Record<string, unknown>)) {
@@ -56,8 +58,32 @@ function load(): TallyState {
     }
     return out
   } catch {
-    return {}
+    return null
   }
+}
+
+function load(): TallyState {
+  const current = read(KEY)
+  if (current) return current
+
+  /* First run since the per-reserve split was dropped: fold the old
+     `<reserveId>::<species>` entries into one total per species so an
+     in-progress grind isn't lost. v1 is left in place — untouched, it makes
+     the change reversible. */
+  const legacy = read(LEGACY_KEY)
+  if (!legacy) return {}
+
+  const out: TallyState = {}
+  for (const [k, c] of Object.entries(legacy)) {
+    const name = k.includes('::') ? k.slice(k.indexOf('::') + 2) : k
+    const acc = out[name] ?? emptyCounts()
+    out[name] = {
+      diamond: acc.diamond + c.diamond,
+      gold: acc.gold + c.gold,
+      lesser: acc.lesser + c.lesser,
+    }
+  }
+  return out
 }
 
 /**
