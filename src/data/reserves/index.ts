@@ -3,6 +3,7 @@ import yukonValley from './yukon-valley'
 import silverRidgePeaks from './silver-ridge-peaks'
 import hirschfelden from './hirschfelden'
 import laytonLakeDistrict from './layton-lake-district'
+import emeraldCoast from './emerald-coast'
 
 /**
  * Reserve registry. To add a reserve: create its data file next to this one
@@ -14,6 +15,7 @@ export const reserves: Reserve[] = [
   silverRidgePeaks,
   hirschfelden,
   laytonLakeDistrict,
+  emeraldCoast,
 ]
 
 export function getReserve(id: string | undefined): Reserve | undefined {

@@ -89,6 +89,7 @@ docs/                          Reference material & verified rosters
   silver-ridge-peaks-roster.md Verified roster, Silver Ridge Peaks
   hirschfelden-roster.md       Verified roster, Hirschfelden
   layton-lake-roster.md        Verified roster, Layton Lake District
+  emerald-coast-roster.md      Verified roster, Emerald Coast
 src/
   App.tsx  main.tsx  index.css  vite-env.d.ts
   theme.ts                     themeVars() — palette → CSS custom properties
@@ -107,6 +108,7 @@ src/
       silver-ridge-peaks.ts
       hirschfelden.ts
       layton-lake-district.ts
+      emerald-coast.ts
 ```
 
 **The core architectural rule:** adding a reserve is *adding a data file*, never
@@ -151,7 +153,7 @@ A kill counter for the Great One grind — the only stateful feature in the app.
   animal actually scored, not its level.
 - **One tally per animal, not per reserve.** The key is the species name
   (`tallyKey()`), so a Red Fox counts the same whether it dropped on Yukon or
-  Hirschfelden. Each card lists the reserves that animal appears on. The 14
+  Hirschfelden. Each card lists the reserves that animal appears on. The 17
   reserve-level Great One entries dedupe to **11 unique animals**.
 - **Order:** the `PINNED` array at the top of `TallyPage.tsx` leads the list —
   it holds whatever grind is active, so it sits under the thumb mid-hunt
@@ -215,6 +217,7 @@ consistent across reserves; the paper/primary/accent family is what varies.
 | Silver Ridge Peaks | pale stone `#ece6d8` | granite slate `#37444e` | rust `#b1462b` |
 | Hirschfelden | warm parchment `#ece4d2` | beech brown `#3d3527` | harvest gold `#c1802a` |
 | Layton Lake District | cool mist `#e9e7dd` | spruce teal `#204a45` | larch amber `#cf7d2e` |
+| Emerald Coast | sun-bleached sand `#ece3cf` | eucalypt olive `#3f4a2a` | outback ochre `#c15a2b` |
 
 ---
 
@@ -350,7 +353,7 @@ source-only.
 
 ## Current state
 
-**Four reserves in the registry**, 35 species total:
+**Five reserves in the registry**, 49 species total:
 
 | Reserve | Species | Great Ones |
 |---|---|---|
@@ -358,13 +361,16 @@ source-only.
 | Silver Ridge Peaks | 9 | 2 — Mule Deer, Black Bear |
 | Hirschfelden | 9 | 6 — Pheasant, Red Fox, Roe, Boar, Fallow, Red Deer |
 | Layton Lake District | 9 | 3 — Whitetail, Black Bear, Moose |
+| Emerald Coast | 14 | 3 — Fallow Deer, Red Deer, Red Fox |
 
-All four are deployed, type-checked by CI, and verified live (owner reviewed
-the four-reserve site plus the motion layer and approved the look, Jul 2026).
+The first four are deployed, type-checked by CI, and verified live (owner
+reviewed the four-reserve site plus the motion layer and approved the look,
+Jul 2026). Emerald Coast was transcribed Jul 2026 and validated by script; its
+CI build is the type-check.
 
-Their Great Ones (3 + 2 + 6 + 3 = 14 reserve entries) dedupe to **11 unique
-animals** on the `#/tally` tab — Red Fox, Black Bear, and Moose each appear on
-two reserves and share one tally.
+Their Great Ones (3 + 2 + 6 + 3 + 3 = 17 reserve entries) dedupe to **11 unique
+animals** on the `#/tally` tab — Red Fox now appears on three reserves, and
+Black Bear, Moose, Fallow Deer and Red Deer on two each, sharing one tally.
 
 **Repo hygiene done:** `.gitignore` added and `node_modules/`, `dist/`, and
 `*.tsbuildinfo` untracked (~2,770 files had been committed). Reference docs
@@ -380,8 +386,12 @@ consolidated into `docs/` — the original handoff had been sitting inside
 - **Layton Lake — Whitetail Deer max level 3.** The source sheet lists it as 3
   where the other deer sit at 5, so Diamonds come off level 3. Transcribed as
   given and flagged in `footerNotes`; worth one in-game confirm.
-- **Hirschfelden — Red Deer Fabled furs.** Historically Spotted only; a Dec 2025
-  remodel may have expanded the set. Flagged rather than guessed.
+- **Hirschfelden / Emerald Coast — Red Deer Fabled furs.** Historically Spotted
+  only; a Dec 2025 remodel may have expanded the set. Flagged rather than
+  guessed on both reserves.
+- **Emerald Coast — Feral Goat coats.** The roster's species register lists
+  `Black-Brown` and `Black-White` that its own drop-in JS block omits. The
+  register (the source-of-truth section) was followed; worth one confirm.
 - **Environment note:** some authoring environments (e.g. the sandboxed
   desktop-app session this was built in) have no Node/npm on PATH, so
   `npm run build` and `npm run dev` fail there. In that case, validate data
